@@ -22,7 +22,7 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 public class Util {
 
     private final static int mGridItemLayoutWidth = 80;
-    private final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
+    private final static int MY_PERMISSIONS_REQUEST = 1;
 
     public static int calculateNoOfColumns(Context context) {
 
@@ -89,7 +89,7 @@ public class Util {
 
     public static void requestPermission(Activity activity) {
 
-        ActivityCompat.requestPermissions(activity, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        ActivityCompat.requestPermissions(activity, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, MY_PERMISSIONS_REQUEST);
 
     }
 

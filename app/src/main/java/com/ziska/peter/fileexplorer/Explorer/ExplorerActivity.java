@@ -26,6 +26,7 @@ import com.ziska.peter.fileexplorer.Utils.Util;
 
 public class ExplorerActivity extends AppCompatActivity implements ExplorerContract.View {
 
+    private static final int MY_PERMISSION = 1;
     private ExplorerContract.Presenter mPresenter;
     private FileAdapter mFileAdapter;
     private RecyclerView mFileRecyclerView;
@@ -224,7 +225,7 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case 1: {
+            case MY_PERMISSION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     initApp();
