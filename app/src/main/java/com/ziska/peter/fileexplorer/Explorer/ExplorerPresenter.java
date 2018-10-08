@@ -4,7 +4,7 @@ import android.graphics.Color;
 
 import com.ziska.peter.fileexplorer.Model.MyFile;
 import com.ziska.peter.fileexplorer.R;
-import com.ziska.peter.fileexplorer.Utils.Util;
+import com.ziska.peter.fileexplorer.Utils.FileUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,13 +19,15 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ExplorerPresenter implements ExplorerContract.Presenter {
 
+    private final static int DELAY_TIME_IN_MILLIS = 1500;
+
     private ExplorerActivity mView;
     private MyFile currentDir = null;
     private ArrayList<MyFile> mMyFiles;
     private ArrayList<String> mPreviousFolders;         //Store folder paths
     private boolean isMultiChoiceEnabled = false;
     private int selectedItems = 0;
-    private int mDelay = 1500;                    //Simulating delay for fetching data
+    private int mDelay = DELAY_TIME_IN_MILLIS;                    //Simulating delay for fetching data
     private CompositeDisposable mDisposable;
 
     public ExplorerPresenter() {
@@ -138,13 +140,10 @@ public class ExplorerPresenter implements ExplorerContract.Presenter {
         }
         ArrayList<MyFile> removedFiles = new ArrayList<>();
         for (MyFile file : mMyFiles) {
-
             if (file.isSelected()) {
                 file.delete();
                 removedFiles.add(file);
             }
-
-
         }
         mMyFiles.removeAll(removedFiles);
         mView.showSnack(Integer.toString(removedFiles.size()) + " Files Deleted");
@@ -176,7 +175,7 @@ public class ExplorerPresenter implements ExplorerContract.Presenter {
         MyFile clickedItem = mMyFiles.get(position);
         if (!clickedItem.isDirectory()) {
             try {
-                Util.openFile(mView.getApplicationContext(), clickedItem.getPath());
+                FileUtil.openFile(mView.getApplicationContext(), clickedItem.getPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }

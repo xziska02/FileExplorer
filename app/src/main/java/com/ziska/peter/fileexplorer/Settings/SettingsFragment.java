@@ -7,6 +7,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.ziska.peter.fileexplorer.R;
+import com.ziska.peter.fileexplorer.Utils.FileUtil;
 import com.ziska.peter.fileexplorer.Utils.Util;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SettingViewInt{
@@ -23,7 +24,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Settin
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 Boolean returnValue = true;
-                if (!Util.isPathCorrect(newValue.toString())) {
+                if (!FileUtil.isPathCorrect(newValue.toString())) {
                     showError();
                     returnValue = false;
                 }

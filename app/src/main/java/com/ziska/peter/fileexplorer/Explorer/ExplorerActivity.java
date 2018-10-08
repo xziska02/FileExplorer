@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 
 import com.ziska.peter.fileexplorer.R;
 import com.ziska.peter.fileexplorer.Settings.SettingsActivity;
+import com.ziska.peter.fileexplorer.Utils.FileUtil;
+import com.ziska.peter.fileexplorer.Utils.PermissionUtil;
 import com.ziska.peter.fileexplorer.Utils.Util;
 
 
@@ -43,16 +45,16 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
         setSupportActionBar(toolbar);
         PreferenceManager.setDefaultValues(this, R.xml.preference, false);
 
-        if (Util.isPermissionGranted(this)) {
+        if (PermissionUtil.isPermissionGranted(this)) {
             initApp();
         } else {
-            Util.requestPermission(this);
+            PermissionUtil.requestPermission(this);
         }
     }
 
     private void initApp() {
         attachPresenter();
-        setCallBack();
+        mActionModeCallbacks = Util.setCallBack(this,mPresenter);
         if (mPresenter.isMultiChoiceEnabled()) {
             showCAB();
         }
@@ -77,7 +79,7 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
 
         if (id == R.id.action_refresh) {
             hideNoFilesImage();
-            mPresenter.loadData(Util.getDefaultPreferencePath(this), true);
+            mPresenter.loadData(FileUtil.getDefaultPreferencePath(this), true);
             return true;
         }
 
@@ -92,7 +94,7 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
             isFirstLoad = true;
         }
         mPresenter.attachView(this);
-        mPresenter.loadData(Util.getDefaultPreferencePath(this), isFirstLoad);
+        mPresenter.loadData(FileUtil.getDefaultPreferencePath(this), isFirstLoad);
     }
 
     @Override
@@ -119,7 +121,6 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
     public void showSnack(String msg) {
         View parentLayout = findViewById(android.R.id.content);
         Snackbar.make(parentLayout, msg, Snackbar.LENGTH_LONG).show();
-
     }
 
     @Override
@@ -140,7 +141,6 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
     @Override
     public void hideNoFilesImage() {
         (findViewById(R.id.no_file_image_layout)).setVisibility(View.INVISIBLE);
-
     }
 
     @Override
@@ -164,12 +164,10 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
         mMode.setTitle(title);
     }
 
-
     @Override
     public void refreshView() {
         mFileAdapter.notifyDataSetChanged();
     }
-
 
     private void setFileRecycler() {
         mFileRecyclerView = findViewById(R.id.fileRecyclerView);
@@ -184,37 +182,6 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
         mFileRecyclerView.setAdapter(mFileAdapter);
     }
 
-
-    private void setCallBack() {
-
-        mActionModeCallbacks = new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                mode.getMenuInflater().inflate(R.menu.menu_context_action_bar, menu);
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                mPresenter.deleteSelectedFiles();
-                return true;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-                mPresenter.setMultiChoiceEnabled(false);
-                mPresenter.unMarkSelectedFiles();
-                refreshView();
-            }
-        };
-
-    }
-
     @Override
     public void onBackPressed() {
         if (!mPresenter.existsPreviousDirectory()) {
@@ -224,14 +191,12 @@ public class ExplorerActivity extends AppCompatActivity implements ExplorerContr
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    initApp();
-                } else {
-                    finish();
-                }
+        if (requestCode == MY_PERMISSION){
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                initApp();
+            } else {
+                finish();
             }
         }
     }
